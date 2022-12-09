@@ -21,6 +21,9 @@ type Client struct {
 	/// messages that this client must receive
 	messageReceiveQueue chan *Message
 
+	/// if the client is a host or not
+	isHost bool
+
 	/// connection to the client
 	conn *websocket.Conn
 }
@@ -54,6 +57,29 @@ func serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	roomId, ok := r.URL.Query()["roomId"]
+
+	if !ok {
+		log.Println("Failed to get client room ID from websocket connection request. Abandoning client...")
+		return
+	}
+
+	isHost, ok := r.URL.Query()["isHost"]
+
+	if !ok {
+		log.Println("Failed to get client host status from websocket connection request. Abandoning client...")
+		return
+	}
+
+	var finalIsHost bool
+
+	if isHost, err := strconv.ParseBool(isHost[0]); err == nil {
+		finalIsHost = isHost
+	} else {
+		log.Println("Failed to parse client ID. Abandoning client...")
+		return
+	}
+
 	conn, err := upgrader.Upgrade(w, r, nil)
 
 	if err != nil {
@@ -62,10 +88,13 @@ func serveWs(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	}
 
 	client := &Client{
-		id:                  finalClientId,
-		username:            username[0],
-		room:                &Room{},
+		id:       finalClientId,
+		username: username[0],
+		room: &Room{
+			id: roomId[0],
+		},
 		messageReceiveQueue: make(chan *Message),
+		isHost:              finalIsHost,
 		conn:                conn,
 	}
 	hub.register <- client
