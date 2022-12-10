@@ -144,9 +144,10 @@ func (c *Client) read() {
 			}
 			break
 		}
+
 		rawMessage = bytes.TrimSpace(bytes.Replace(rawMessage, newline, space, -1))
 
-		var message *Message
+		message := &Message{}
 
 		if err := json.Unmarshal(rawMessage, message); err != nil {
 			log.Printf("error: %v", err)
