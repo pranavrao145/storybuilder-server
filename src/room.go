@@ -1,9 +1,5 @@
 package main
 
-import (
-	"errors"
-)
-
 type Room struct {
 	/// id of this room
 	id string
@@ -21,12 +17,12 @@ type Room struct {
 	unregister chan *Client
 }
 
-func getRoom(hub *Hub, id string) (*Room, error) {
+func getRoom(hub *Hub, id string) (*Room, bool) {
 	if room, ok := hub.rooms[id]; !ok {
-		return room, nil
+		return room, true
 	}
 
-	return nil, errors.New("Failed to get room with room ID supplied.")
+	return nil, false
 }
 
 func newRoom(hub *Hub, id string) *Room {

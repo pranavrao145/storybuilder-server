@@ -19,6 +19,8 @@ func main() {
 		serveWs(hub, w, r)
 	})
 
+	attachApiHandlers(hub)
+
 	log.Println("Starting server...")
 
 	err := http.ListenAndServe(*addr, nil)

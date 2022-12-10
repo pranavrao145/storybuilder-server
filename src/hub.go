@@ -21,21 +21,17 @@ func (h *Hub) run() {
 	for {
 		select {
 		case client := <-h.register:
-			if client.isHost {
-				client.room = newRoom(h, client.room.id)
-				client.room.clients[client.id] = client
-				go client.room.run()
-			} else {
-				room, err := getRoom(h, client.room.id)
+			room, ok := getRoom(h, client.room.id)
 
-				if err != nil {
-					log.Panic("Failed to get a room from the room ID given.")
-					return
-				}
-
-				client.room = room
-				client.room.clients[client.id] = client
+			if !ok {
+				log.Panic("Failed to get a room from the room ID given.")
+				return
 			}
+
+			client.room = room
+			client.room.clients[client.id] = client
+
+			// TODO: send a join signal to all clients
 		}
 	}
 }
