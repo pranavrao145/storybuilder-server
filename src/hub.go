@@ -3,10 +3,10 @@ package main
 import "log"
 
 type Hub struct {
-	/// map that maps room IDs to rooms
+	// map that maps room IDs to rooms
 	rooms map[string]*Room
 
-	/// channel for taking in any new clients that come in
+	// channel for taking in any new clients that come in
 	register chan *Client
 }
 
@@ -32,18 +32,16 @@ func (h *Hub) run() {
 			client.room.clients[client.id] = client
 
 			joinMessage := &Message{
-				messageType:       "join",
-				roomId:            client.room.id,
-				content:           "",
-				senderUsername:    "",
-				senderId:          -1,
-				recipientUsername: "",
-				recipientId:       -1,
+				MessageType:       "join",
+				RoomId:            client.room.id,
+				Content:           "",
+				SenderUsername:    "",
+				SenderId:          -1,
+				RecipientUsername: "",
+				RecipientId:       -1,
 			}
 
-			for _, client := range room.clients {
-				client.messageSendQueue <- joinMessage
-			}
+			client.room.broadcast <- joinMessage
 		}
 	}
 }

@@ -12,22 +12,22 @@ import (
 )
 
 type Client struct {
-	/// id of this client
+	// id of this client
 	id int
 
-	/// username of this client
+	// username of this client
 	username string
 
-	/// room that this client is connected to
+	// room that this client is connected to
 	room *Room
 
-	/// messages that are to be sent to the peer
+	// messages that are to be sent to the peer
 	messageSendQueue chan *Message
 
-	/// if the client is a host or not
+	// if the client is a host or not
 	isHost bool
 
-	/// connection to the client
+	// connection to the client
 	conn *websocket.Conn
 }
 
@@ -189,6 +189,21 @@ func (c *Client) write() {
 			}
 
 			w.Write(message)
+
+			// Add queued messages to the current websocket message.
+			n := len(c.messageSendQueue)
+			for i := 0; i < n; i++ {
+				w.Write(newline)
+
+				message, err := json.Marshal(<-c.messageSendQueue)
+
+				if err != nil {
+					log.Printf("error: %v", err)
+					break
+				}
+
+				w.Write(message)
+			}
 
 			if err := w.Close(); err != nil {
 				return

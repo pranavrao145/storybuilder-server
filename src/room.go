@@ -1,19 +1,19 @@
 package main
 
 type Room struct {
-	/// id of this room
+	// id of this room
 	id string
 
-	/// a map that maps client IDs to their clients
+	// a map that maps client IDs to their clients
 	clients map[int]*Client
 
-	/// the hub that this room is a part of
+	// the hub that this room is a part of
 	hub *Hub
 
-	/// messages to broadcast to all clients
+	// messages to broadcast to all clients
 	broadcast chan *Message
 
-	/// channel for removing dead clients
+	// channel for removing dead clients
 	unregister chan *Client
 }
 
@@ -41,13 +41,13 @@ func (r *Room) run() {
 			delete(r.clients, client.id)
 
 			leaveMessage := &Message{
-				messageType:       "leave",
-				roomId:            client.room.id,
-				content:           "",
-				senderUsername:    "",
-				senderId:          -1,
-				recipientUsername: "",
-				recipientId:       -1,
+				MessageType:       "leave",
+				RoomId:            client.room.id,
+				Content:           "",
+				SenderUsername:    "",
+				SenderId:          -1,
+				RecipientUsername: "",
+				RecipientId:       -1,
 			}
 
 			for _, client := range client.room.clients {

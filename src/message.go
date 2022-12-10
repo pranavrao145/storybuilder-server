@@ -1,24 +1,24 @@
 package main
 
 type Message struct {
-	/// type of the message (mandatory)
-	messageType string
+	// type of the message (mandatory)
+	MessageType string `json:"messageType"`
 
-	/// the room ID this message was sent from (mandatory)
-	roomId string
+	// the room ID this message was sent from (mandatory)
+	RoomId string `json:"roomId"`
 
-	/// content of this message (optional)
-	content string
+	// Content of this message (optional)
+	Content string `json:"content"`
 
-	/// the username of the sender of this message (optional)
-	senderUsername string
+	// the username of the sender of this message (optional)
+	SenderUsername string `json:"senderUsername"`
 
-	/// the id of the sender of this message (optional)
-	senderId int
+	// the id of the sender of this message (optional)
+	SenderId int `json:"senderId"`
 
-	/// the username of the inteded recipient of this message (optional)
-	recipientUsername string
+	// the username of the inteded recipient of this message (optional)
+	RecipientUsername string `json:"recipientUsername"`
 
-	/// the id of the inteded recipient of this message (optional)
-	recipientId int
+	// the id of the inteded recipient of this message (optional)
+	RecipientId int `json:"recipientId"`
 }
