@@ -5,7 +5,7 @@ type Message struct {
 	messageType string
 
 	/// the room ID this message was sent from (mandatory)
-	roomID string
+	roomId string
 
 	/// content of this message (optional)
 	content string
@@ -14,11 +14,11 @@ type Message struct {
 	senderUsername string
 
 	/// the id of the sender of this message (optional)
-	senderId string
+	senderId int
 
 	/// the username of the inteded recipient of this message (optional)
 	recipientUsername string
 
 	/// the id of the inteded recipient of this message (optional)
-	recipientId string
+	recipientId int
 }

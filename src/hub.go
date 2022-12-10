@@ -10,14 +10,14 @@ type Hub struct {
 	register chan *Client
 }
 
-func NewHub() *Hub {
+func newHub() *Hub {
 	return &Hub{
 		rooms:    map[string]*Room{},
 		register: make(chan *Client),
 	}
 }
 
-func (h *Hub) Run() {
+func (h *Hub) run() {
 	for {
 		select {
 		case client := <-h.register:
