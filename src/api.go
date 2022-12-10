@@ -27,6 +27,7 @@ func HandleGenerateRoom(hub *Hub, w http.ResponseWriter, r *http.Request) {
 
 	generatedId := randSeq(8)
 	room := newRoom(hub, generatedId)
+	hub.rooms[room.id] = room
 
 	go room.run()
 

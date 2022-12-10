@@ -18,7 +18,7 @@ type Room struct {
 }
 
 func getRoom(hub *Hub, id string) (*Room, bool) {
-	if room, ok := hub.rooms[id]; !ok {
+	if room, ok := hub.rooms[id]; ok {
 		return room, true
 	}
 
@@ -39,6 +39,20 @@ func (r *Room) run() {
 		select {
 		case client := <-r.unregister:
 			delete(r.clients, client.id)
+
+			leaveMessage := &Message{
+				messageType:       "leave",
+				roomId:            client.room.id,
+				content:           "",
+				senderUsername:    "",
+				senderId:          -1,
+				recipientUsername: "",
+				recipientId:       -1,
+			}
+
+			for _, client := range client.room.clients {
+				client.messageSendQueue <- leaveMessage
+			}
 		case message := <-r.broadcast:
 			for _, client := range r.clients {
 				client.messageSendQueue <- message

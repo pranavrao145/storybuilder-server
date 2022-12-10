@@ -31,7 +31,19 @@ func (h *Hub) run() {
 			client.room = room
 			client.room.clients[client.id] = client
 
-			// TODO: send a join signal to all clients
+			joinMessage := &Message{
+				messageType:       "join",
+				roomId:            client.room.id,
+				content:           "",
+				senderUsername:    "",
+				senderId:          -1,
+				recipientUsername: "",
+				recipientId:       -1,
+			}
+
+			for _, client := range room.clients {
+				client.messageSendQueue <- joinMessage
+			}
 		}
 	}
 }
