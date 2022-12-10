@@ -8,9 +8,6 @@ type Hub struct {
 
 	/// channel for taking in any new clients that come in
 	register chan *Client
-
-	/// channel for removing dead clients
-	unregister chan *Client
 }
 
 func NewHub() *Hub {
@@ -27,6 +24,7 @@ func (h *Hub) Run() {
 			if client.isHost {
 				client.room = newRoom(h, client.room.id)
 				client.room.clients[client.id] = client
+				go client.room.run()
 			} else {
 				room, err := getRoom(h, client.room.id)
 

@@ -1,6 +1,8 @@
 package main
 
-import "errors"
+import (
+	"errors"
+)
 
 type Room struct {
 	/// id of this room
@@ -10,10 +12,13 @@ type Room struct {
 	clients map[int]*Client
 
 	/// the hub that this room is a part of
-	// hub *Hub
+	hub *Hub
 
-	/// messages that have been sent to this room
-	messageReceiveQueue chan *Message
+	/// messages to broadcast to all clients
+	broadcast chan *Message
+
+	/// channel for removing dead clients
+	unregister chan *Client
 }
 
 func getRoom(hub *Hub, id string) (*Room, error) {
@@ -26,8 +31,22 @@ func getRoom(hub *Hub, id string) (*Room, error) {
 
 func newRoom(hub *Hub, id string) *Room {
 	return &Room{
-		id:                  id,
-		clients:             map[int]*Client{},
-		messageReceiveQueue: make(chan *Message),
+		id:        id,
+		clients:   map[int]*Client{},
+		hub:       hub,
+		broadcast: make(chan *Message),
+	}
+}
+
+func (r *Room) run() {
+	for {
+		select {
+		case client := <-r.unregister:
+			delete(r.clients, client.id)
+		case message := <-r.broadcast:
+			for _, client := range r.clients {
+				client.messageSendQueue <- message
+			}
+		}
 	}
 }
