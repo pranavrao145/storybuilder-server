@@ -43,13 +43,13 @@ func findPositionInSlice(slice []int, requiredElenment int) (int, bool) {
 
 func getNextClientId(room *Room, clientId int) (int, bool) {
 	// generate slice of client IDs in this room
-	keys := make([]int, len(room.clients))
+	var keys []int
 
-	i := 0
-
-	for k := range room.clients {
-		keys[i] = k
-		i++
+	for k, v := range room.clients {
+		// special case of ID (host end game listener, should not be added to the list of clients)
+		if v.id != -1 {
+			keys = append(keys, k)
+		}
 	}
 
 	// sort the slice in ascending order

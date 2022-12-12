@@ -161,9 +161,10 @@ func (c *Client) read() {
 			return
 		}
 
-		// TODO: test this out
-		message.RecipientId = nextClientId
-		message.RecipientUsername = c.room.clients[nextClientId].username
+		if message.MessageType == "story" {
+			message.RecipientId = nextClientId
+			message.RecipientUsername = c.room.clients[nextClientId].username
+		}
 
 		c.room.broadcast <- message
 	}
