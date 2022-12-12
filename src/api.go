@@ -120,15 +120,7 @@ func HandleGenerateClientId(hub *Hub, w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(404)
 		return
 	} else {
-		max := 0
-
-		for _, client := range room.clients {
-			if client.id > max {
-				max = client.id
-			}
-		}
-
-		p.ClientId = max + 1
+		p.ClientId = getRoomMaxClientId(room) + 1
 	}
 
 	json.NewEncoder(w).Encode(p)

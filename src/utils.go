@@ -17,3 +17,15 @@ func randSeq(n int) string {
 
 	return string(b)
 }
+
+func getRoomMaxClientId(room *Room) int {
+	max := 0
+
+	for _, client := range room.clients {
+		if client.id > max {
+			max = client.id
+		}
+	}
+
+	return max
+}
