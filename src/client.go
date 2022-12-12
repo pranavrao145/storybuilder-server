@@ -154,6 +154,17 @@ func (c *Client) read() {
 			break
 		}
 
+		nextClientId, ok := getNextClientId(c.room, c.id)
+
+		if !ok {
+			log.Println("Failed to get next client ID in room.")
+			return
+		}
+
+		// TODO: test this out
+		message.RecipientId = nextClientId
+		message.RecipientUsername = c.room.clients[nextClientId].username
+
 		c.room.broadcast <- message
 	}
 }
