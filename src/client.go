@@ -164,6 +164,13 @@ func (c *Client) read() {
 		if message.MessageType == "story" {
 			message.RecipientId = nextClientId
 			message.RecipientUsername = c.room.clients[nextClientId].username
+
+			err := addStoryLineToDb(c.room.id, message.Content)
+
+			if err != nil {
+				log.Println(err)
+				return
+			}
 		}
 
 		c.room.broadcast <- message

@@ -22,7 +22,11 @@ type GenerateClientIdPayload struct {
 	ClientId int `json:"clientId"`
 }
 
-func HandleGenerateRoom(hub *Hub, w http.ResponseWriter, r *http.Request) {
+type GetStoryLinesPayload struct {
+	StoryLines []string `json:"storyLines"`
+}
+
+func handleGenerateRoom(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	generatedId := randSeq(8)
@@ -36,7 +40,7 @@ func HandleGenerateRoom(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(p)
 }
 
-func HandleGetMembers(hub *Hub, w http.ResponseWriter, r *http.Request) {
+func handleGetMembers(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	roomId, ok := r.URL.Query()["roomId"]
@@ -70,7 +74,7 @@ func HandleGetMembers(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(p)
 }
 
-func HandleValidateRoom(hub *Hub, w http.ResponseWriter, r *http.Request) {
+func handleValidateRoom(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	roomId, ok := r.URL.Query()["roomId"]
@@ -100,7 +104,7 @@ func HandleValidateRoom(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(p)
 }
 
-func HandleGenerateClientId(hub *Hub, w http.ResponseWriter, r *http.Request) {
+func handleGenerateClientId(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	roomId, ok := r.URL.Query()["roomId"]
@@ -126,23 +130,61 @@ func HandleGenerateClientId(hub *Hub, w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(p)
 }
 
+func handleGetAllStoryLines(hub *Hub, w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	roomId, ok := r.URL.Query()["roomId"]
+
+	if !ok {
+		log.Println("No room ID provided. Returning 400.")
+		w.WriteHeader(400)
+		return
+	}
+
+	var p GetStoryLinesPayload
+
+	room, ok := hub.rooms[roomId[0]]
+
+	if !ok {
+		log.Println("Room does not exist. Returning 404.")
+		w.WriteHeader(404)
+		return
+	} else {
+		storyLines, err := getStoryLinesFromDb(room.id)
+
+		if err != nil {
+			log.Println("Unable to get story lines from database. Returning 500.")
+			w.WriteHeader(500)
+			return
+		}
+
+		p.StoryLines = storyLines
+	}
+
+	json.NewEncoder(w).Encode(p)
+}
+
 func attachApiHandlers(hub *Hub) {
 	// returns a new room id
 	http.HandleFunc("/generate_room", func(w http.ResponseWriter, r *http.Request) {
-		HandleGenerateRoom(hub, w, r)
+		handleGenerateRoom(hub, w, r)
 	})
 
 	// // get members
 	http.HandleFunc("/get_members", func(w http.ResponseWriter, r *http.Request) {
-		HandleGetMembers(hub, w, r)
+		handleGetMembers(hub, w, r)
 	})
 
 	// validate room ID
 	http.HandleFunc("/validate_room", func(w http.ResponseWriter, r *http.Request) {
-		HandleValidateRoom(hub, w, r)
+		handleValidateRoom(hub, w, r)
 	})
 
 	http.HandleFunc("/generate_client_id", func(w http.ResponseWriter, r *http.Request) {
-		HandleGenerateClientId(hub, w, r)
+		handleGenerateClientId(hub, w, r)
+	})
+
+	http.HandleFunc("/get_all_story_lines", func(w http.ResponseWriter, r *http.Request) {
+		handleGetAllStoryLines(hub, w, r)
 	})
 }
