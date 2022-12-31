@@ -5,7 +5,11 @@ networks:
 services:
   redis:
     image: "bitnami/redis:latest"
-    env_file: .env
+    # just because we're running it locally
+    environment:
+      - REDIS_USER=user
+      - REDIS_PASSWORD=password
+      - REDIS_AOF_ENABLED=no
     volumes:
       - /redis-data:/bitnami/redis/data
     ports:
@@ -14,7 +18,8 @@ services:
       - app-tier
   app:
     build: .
-    env_file: .env
+    environment:
+      - REDIS_CONNECTION_URL=redis://user:password@redis/0
     ports:
       - '8080:8080'
     depends_on:

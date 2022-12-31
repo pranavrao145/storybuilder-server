@@ -2,7 +2,7 @@
 
 Server for the StoryBuilder game. Made in Golang.
 
-# Requirements
+## Requirements
 
 At the moment, this server is not deployed in the cloud. However, it can be easily
 hosted locally, as long as you have the following (mostly standard) tools:
@@ -18,7 +18,7 @@ hosted locally, as long as you have the following (mostly standard) tools:
     guide](https://docs.docker.com/compose/install/compose-plugin/#installing-compose-on-linux-systems)
     for details.
 
-# Usage
+## Usage
 
 First, if it's not already there, clone this repository to your local machine:
 
