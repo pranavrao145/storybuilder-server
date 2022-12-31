@@ -6,8 +6,6 @@ import (
 	"net/http"
 )
 
-var addr = flag.String("addr", ":8080", "http service address")
-
 func main() {
 	flag.Parse()
 
@@ -23,8 +21,9 @@ func main() {
 	initializeRedis()
 
 	log.Println("Starting server...")
+	log.Println("Listening on port 8080.") 
 
-	err := http.ListenAndServe(*addr, nil)
+    err := http.ListenAndServe("0.0.0.0:8080", nil)
 
 	if err != nil {
 		log.Fatal("ListenAndServe: ", err)
